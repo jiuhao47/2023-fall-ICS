@@ -95,7 +95,7 @@
 
    输出结果：
 
-   ![Lab1-1](E:\VSCODE\UbuntuShare\ICS\Pic\Lab1-1.png)
+   ![Lab1-1](.\Pic\Lab1-1.png)
 
    使用的C源码：
 
@@ -161,7 +161,7 @@
 
    输出结果：
 
-   ![Lab1-2](E:\VSCODE\UbuntuShare\ICS\Pic\Lab1-2.png)
+   ![Lab1-2](.\Pic\Lab1-2.png)
 
 6. **将/etc/fstab的base64编码写入文件：**
 
@@ -244,7 +244,7 @@
 
    输出结果：
 
-   ![Lab1-3](E:\VSCODE\UbuntuShare\ICS\Pic\Lab1-3.png)
+   ![Lab1-3](.\Pic\Lab1-3.png)
 
 **Linux问题探究：**
 
@@ -300,11 +300,11 @@
 
 终端输出：
 
-![Lab1-4](E:\VSCODE\UbuntuShare\ICS\Pic\Lab1-4.png)
+![Lab1-4](.\Pic\Lab1-4.png)
 
 可知owner与group用户拥有**hello.c**的读取与写入权限，other用户只具有读取权限，且三者都不具备执行权限。如果强行执行该文件则会报错。
 
-![Lab1-5](E:\VSCODE\UbuntuShare\ICS\Pic\Lab1-5.png)
+![Lab1-5](.\Pic\Lab1-5.png)
 
 ```
    # 更改hello.c的权限为-rwx-rwx-rwx
@@ -317,9 +317,9 @@
 
    输出结果：
 
-![Lab1-6](E:\VSCODE\UbuntuShare\ICS\Pic\Lab1-6.png)
+![Lab1-6](.\Pic\Lab1-6.png)
 
-![Lab1-7](E:\VSCODE\UbuntuShare\ICS\Pic\Lab1-7.png)
+![Lab1-7](.\Pic\Lab1-7.png)
 2. **问题二：什么是Ubuntu中的用户组？什么是用户权限？如何进行用户组与用户权限管理？**
 
    研究过程：通过查阅资料，我在[Ubuntu/Linux用户管理与权限管理](https://blog.csdn.net/yl19870518/article/details/100776136)这篇博客中找到了对应的解答。
@@ -350,7 +350,7 @@
 
    输出结果：
 
-   ![Lab1-8](E:\VSCODE\UbuntuShare\ICS\Pic\Lab1-8.png)
+   ![Lab1-8](.\Pic\Lab1-8.png)
 
    > **用户组创建与删除**
    > 很多时候在创建新用户的时候，希望把一些用户归为一个组，以便后续的管理，在Ubuntu中，一个用户是可以同时在几个组里面的，会指定一个主要组。
@@ -370,7 +370,7 @@
 
    输出结果：
 
-   ![Lab1-9](E:\VSCODE\UbuntuShare\ICS\Pic\Lab1-9.png)
+   ![Lab1-9](.\Pic\Lab1-9.png)
 
    > 2.创建用户组
    > 创建用户组的命令是groupadd，普通管理员需要加sudo来执行，root用户不用。
@@ -440,7 +440,7 @@
 
    输出结果：
 
-   ![Lab1-10](E:\VSCODE\UbuntuShare\ICS\Pic\Lab1-10.png)
+   ![Lab1-10](.\Pic\Lab1-10.png)
 
 **Linux综合应用**
 
@@ -503,7 +503,7 @@
 
 输出结果：
 
-![Lab1-11](E:\VSCODE\UbuntuShare\ICS\Pic\Lab1-11.png)
+![Lab1-11](.\Pic\Lab1-11.png)
 
    对Docker的理解：
 
@@ -535,7 +535,7 @@ sudo apt install libc-dbg
 
    输出结果
 
-![Lab1-12](E:\VSCODE\UbuntuShare\ICS\Pic\Lab1-12.png)
+![Lab1-12](.\Pic\Lab1-12.png)
 
 对调试界面的理解：
 
@@ -632,7 +632,7 @@ sudo apt install libc-dbg
 
    输出结果：
 
-   ![Lab1-13](E:\VSCODE\UbuntuShare\ICS\Pic\Lab1-13.png)
+   ![Lab1-13](.\Pic\Lab1-13.png)
 
    对沙箱设置的理解：
 
@@ -679,7 +679,7 @@ sudo apt install libc-dbg
 
    输出结果：
 
-   ![Lab1-14](E:\VSCODE\UbuntuShare\ICS\Pic\Lab1-14.png)
+   ![Lab1-14](.\Pic\Lab1-14.png)
 
    理解：
 
@@ -750,7 +750,7 @@ sudo apt install libc-dbg
 
    输出结果：
 
-   ![Lab1-15](E:\VSCODE\UbuntuShare\ICS\Pic\Lab1-15.png)
+   ![Lab1-15](.\Pic\Lab1-15.png)
 
    理解：
    

@@ -73,22 +73,20 @@
 
    鉴于汇编代码过长，此处仅比较两条**C源码**语句与**汇编代码**的关系：
 
-   1. **C源码**
-      
-      ```C
+   1. ```C
+      /* C源码 */
       printf("Error: division by zero\n");
-```
-      
-       **伪C代码**
-      
-      ```C
-puts("Error: division by zero");
       ```
-      
-      **汇编代码** 
-      
+
+      ```C
+      /* 伪C代码 */
+      puts("Error: division by zero");
+      ```
+
       ```assembly
+      /* 汇编代码 */
       /* {}内为PCode代码 */
+      
       LEA
       RAX,[s_Error:_division_by_zero_0010202e]
       /* LEA为装入有效地址，这里是将字符串的地址装入寄存器RAX */
@@ -96,9 +94,9 @@ puts("Error: division by zero");
       	RAX = COPY 0x10202e:8
       }
       MOV
-   	RDI=>s_Error:_division_by_zero_0010202e,RAX
+      RDI=>s_Error:_division_by_zero_0010202e,RAX
       {
-      RDI = COPY RAX
+   	RDI = COPY RAX
       }
       /* MOV为传送字或字节，这里是将寄存器RAX的值传入RDI */
       
@@ -109,26 +107,23 @@ puts("Error: division by zero");
           STORE ram(RSP), 0x1012c5:8 
           CALL *[ram]0x101080:8
       }
-   /* 过程调用函数puts输出字符串“Error: division by zero” */
+      /* 过程调用函数puts输出字符串“Error: division by zero” */
       ```
-      
+   
       ---
       
-   2. **C源码**
-      
-      ```C
+   2. ```C
+      /* C源码 */
       if (operand2 == 0)
-   ```
-      
-      **伪C代码**
-      
-      ```C
-   if (local_18 == 0)
       ```
-      
-      **汇编代码**
-      
+   
+      ```C
+      /* 伪C代码 */
+      if (local_18 == 0)
+      ```
+   
       ```assembly
+      /* 汇编代码 */
       /* {}内为PCode代码 */
       
       MOV
@@ -159,6 +154,8 @@ puts("Error: division by zero");
       TEST指令的操作是将目的操作数和源操作数按位与，运算结果不送回目的操作数，然后根据结果设置SF,ZF,PF标志位，并将CF和OF标志位清零，一般下面会跟跳转，根据ZF标志位是否为零来决定是否跳转，即，这句意思就是判断EAX是否为零
       */
       ```
+      
+      ___
       
    
 2. **逆向工程：**

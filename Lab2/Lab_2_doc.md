@@ -96,21 +96,18 @@
       MOV
       RDI=>s_Error:_division_by_zero_0010202e,RAX
       {
-   	RDI = COPY RAX
+      RDI = COPY RAX
       }
       /* MOV为传送字或字节，这里是将寄存器RAX的值传入RDI */
-      
       CALL
       <EXTERNAL>::puts
       {
       	RSP = INT_SUB RSP, 8:8
-          STORE ram(RSP), 0x1012c5:8 
-          CALL *[ram]0x101080:8
+         STORE ram(RSP), 0x1012c5:8 
+         CALL *[ram]0x101080:8
       }
       /* 过程调用函数puts输出字符串“Error: division by zero” */
       ```
-   
-      ---
       
    2. ```C
       /* C源码 */
@@ -151,12 +148,12 @@
       	PF = INT_EQUAL $U13500:1, 0:1
       }
       /*
-      TEST指令的操作是将目的操作数和源操作数按位与，运算结果不送回目的操作数，然后根据结果设置SF,ZF,PF标志位，并将CF和OF标志位清零，一般下面会跟跳转，根据ZF标志位是否为零来决定是否跳转，即，这句意思就是判断EAX是否为零
+      TEST指令的操作是将目的操作数和源操作数按位与，运算结果不送回目的操作数。
+      然后根据结果设置SF,ZF,PF标志位，并将CF和OF标志位清零，一般下面会跟跳转，根据ZF标志位是否为零来决定是否跳转。
+      即，这句意思就是判断EAX是否为零
       */
       ```
-      
-      ___
-      
+
    
 2. **逆向工程：**
 

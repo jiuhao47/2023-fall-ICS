@@ -271,5 +271,91 @@
    
 3. **调试：**
 
+   > 1. 在 main 函数设置断点：在 gdb 中输入命令 break main。
+   >
+   > 2. 运行程序：在 gdb 中输入命令 run。
+   >
+   > 3. 在 scanf 的调用前后设置断点：查看 scanf 调用前后的 RIP 地址，在 gdb 中使用 break 在该地址下断点，并continue 继续。
+   >
+   > 4. 在调用前观察现象：在程序暂停时，使用 gdb 中的命令 print 查看参数所在的寄存器、不同变量的值以及它们的位置；这些信息也可以由其他命令查看，可以交叉验证。
+   >
+   > 5. 继续运行程序：在 gdb 中输入命令 continue，并输入你希望 scanf 接受的数据。
+   >
+   > 6. 再次观察现象：在程序暂停时，使用 gdb 中的命令 print 查看参数所在的寄存器、不同变量的值以及它们的位置。
+
+   GDB指令如下：
+
+   ```bash
+   b main
+   r
+   b *0x00005555555551f1
+   b *0x00005555555551fb
+   continue
+   p operand1
+   p operand2
+p operator
+   i r
+   x/s $rax
+   x/s $rbx
+   x/s $rcx
+   x/s $rbx
+   x/s $rsi
+   x/s $rdi
+   x/s $rbp
+   x/s $rsp
+   continue
+   # 输入
+   i r
+   p operand1
+   p operand2
+   p operator
+   x/s $rax
+   x/s $rbx
+   x/s $rcx
+   x/s $rbx
+   x/s $rsi
+   x/s $rdi
+   x/s $rbp
+   x/s $rsp
+   ```
+   
+   程序输出：
+   
+   | 变量     | 值（输入前） | 值（输入后） |
+   | -------- | ------------ | ------------ |
+   | operand1 | 0x0          | 0x1          |
+   | operand2 | 0x1000       | 0x4          |
+   | operator | 0x0          | 0x2b         |
+   
+   | 寄存器 | 值（输入前）   | 字符串形式 | 值（输入后）   | 字符串形式 |
+   | ------ | -------------- | ---------- | -------------- | ---------- |
+   | RAX    | 0x555555556019 | "%d %c %d" | 0x3            | 无         |
+   | RBX    | 0x0            | 无         | 0x0            | 无         |
+   | RCX    | 0x7fffffffdbf0 | “”         | 0x20           | 无         |
+   | RDX    | 0x7fffffffdbeb | “”         | 0x0            | 无         |
+   | RSI    | 0x7fffffffdbec | “”         | 0x4            | 无         |
+   | RDI    | 0x555555556019 | "%d %c %d" | 0x7fffffffd6a0 | “4”        |
+   
+   程序运行截图：
+   
+   ![Lab2-3](E:\VSCODE\UbuntuShare\ICS\UCAS-ICS-Share\Lab2\Pic\Lab2-3.png)
+   
+   ![Lab2-4](E:\VSCODE\UbuntuShare\ICS\UCAS-ICS-Share\Lab2\Pic\Lab2-4.png)
+   
+   运行结果分析：
+   
+   寄存器RAX储存的为后续用于条件判断的输入数，从"%d %c %d"的字符串变成了3；寄存器RCX，RDX，RSI在运行前都是空字符串，然后值分别变成了0x20,0x0,0x4，即32，0，4，其中32位空格的ASSCI码，4为operand2的值，对应寄存器RDI存储的字符串“4”。
+   
+4. **漏洞挖掘：**
+
    
 
+[gdb给指定位置设置断点_gdb 断点 地址-CSDN博客](https://blog.csdn.net/rubikchen/article/details/115588379)
+
+[GDB内存断点(Memory break)的使用举例_gdb 内存越界-CSDN博客](https://blog.csdn.net/livelylittlefish/article/details/5110234)
+
+[gdb 笔记（03）— 某一行设置断点、为函数（单个唯一函数、多个同名函数、使用正则）设置断点、设置条件断点、设置临时断点_gdb breakpoint_wohu007的博客-CSDN博客](https://blog.csdn.net/wohu1104/article/details/124944226)
+
+[GDB 用法之显示寄存器_gdb查看寄存器_xiaozhiwise的博客-CSDN博客](https://blog.csdn.net/xiaozhiwise/article/details/123247408)
+
+[ASCII 表 | 菜鸟教程 (runoob.com)](https://www.runoob.com/w3cnote/ascii.html)

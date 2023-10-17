@@ -9,7 +9,7 @@
 
 ### 实验步骤、现象与结果分析：
 
-**基础操作：**
+**一、基础操作：**
 
 1. **编译：**
 
@@ -424,10 +424,12 @@
       #即执行execve("/bin/sh,0,0")，获取shell
       ```
    
-7. **漏洞利用：**
+6. **漏洞利用：**
+
+   **调试漏洞利用：**
 
    > ① 请在利用脚本`exp.py`中，程序启动之后但是数据发送之前，加入`pause()` 或者`input("continue >") `，使得利用脚本运行时，暂停在发送前。在一个终端窗口(记为 A)运行这一利用脚本；
->
+   >
    > ② 接着，在另一个终端窗口(记为 B)中，打开 gdb 并执行`attach pid`命令(pid 换成利用运行的终端界面显示的 pid)；
    >
    > ③ 然后，在反编译器中找到`scanf`返回时的下一条指令的地址，在 gdb 里用 break 命令下断点；
@@ -435,13 +437,13 @@
    > ④ 在 gdb 里`continue`，并在终端 A 上输入回车让利用继续运行；
    >
    > ⑤ 终端 B 中，gdb 此时应该在断点处停下。从此处开始，单步调试（使用 `ni `跳过下一个 `printf`函数调用）
-   
+
    漏洞利用的机制：
-   
+
    ​	利用程序针对`hello`程序中存在的未设置用户输入长度检测的漏洞，通过精确控制输入字符串的长度，使得栈缓冲区溢出，覆盖栈中的其他信息，尤其是输入函数的返回地址。通过将返回地址篡改覆盖为shellcode所处地址，即可以利用该漏洞实现shell获取。
-   
+
    本实验中用到的利用程序`exp.py`及其中特殊数值的解释
-   
+
    ```python
    #!/usr/bin/python
    
@@ -458,16 +460,42 @@
    0x40119e
    # 被修改的输入函数返回地址，指向/bin/sh的shellcode
    ```
-   
+
    运行截图：
-   
+
    ![Lab2-5.png](https://github.com/jiuhao47/UCAS-ICS-Share/blob/main/Lab2/Pic/Lab2-5.png?raw=true)
-   
+
    ![Lab2-6.png](https://github.com/jiuhao47/UCAS-ICS-Share/blob/main/Lab2/Pic/Lab2-6.png?raw=true)
-   
+
+   **在网络环境中尝试运行漏洞利用：**
+
+   > ① 安装`socat`并在`hello`所在路径下执行：`socat tcp-l:2323,reuseaddr,fork exec:./hello`
+   >
+   > ② 使用`nc`来访问服务，确保服务正常开启，对面和本地执行`hello`程序的行为一致：`nc 127.0.0.1 2323`
+   >
+   > ③ 将漏洞利用脚本中的`r = process("./hello")`改为`r = remote("127.0.0.1", 2323)`
+   >
+   > ④ 运行漏洞利用，得到另一端的`shell`；
+   >
+   > ⑤ 如有条件，可以启动两个虚拟机，从一个虚拟机运行漏洞利用脚本来获得另一个虚拟机的执行权限。
+
    网络环境下的运行截图：
-   
-   ![image-20231017163928965](C:\Users\20149\AppData\Roaming\Typora\typora-user-images\image-20231017163928965.png)
+
+   ![Lab2-7.png](https://github.com/jiuhao47/UCAS-ICS-Share/blob/main/Lab2/Pic/Lab2-7.png?raw=true)
+
+   ![Lab2-8.png](https://github.com/jiuhao47/UCAS-ICS-Share/blob/main/Lab2/Pic/Lab2-8.png?raw=true)
+
+   ![Lab2-9.png](https://github.com/jiuhao47/UCAS-ICS-Share/blob/main/Lab2/Pic/Lab2-9.png?raw=true)
+
+   > 此外，请说明：在程序进入未定义状态时，漏洞利用的过程中利用了哪些程序在这种特定情况下的行为特点？在网络环境中，为什么这种漏洞的成功利用会导致系统安全策略被违反（联想正课上对漏洞的定义！），破坏系统的安全性？
+
+   ​	程序的未定义状态即执行某种计算机代码产生的状态，该状态在当前使用的语言标准中没有规定。
+
+   ​	漏洞利用的过程中利用了缓冲区溢出、整数溢出、空指针解引用等程序的行为特点。以精心的构造来产生错误的程序执行路径、逻辑行为，从而达到以他人身份运行命令、违反控制策略去访问数据、伪装成另一个实体、发起拒绝服务攻击等违反安全策略的目的，使得目标系统处于危险状态之中。在网络环境中，如果上述漏洞被成功利用，则显然会导致系统安全策略被违反，使得系统本身与数据暴露在攻击者面前。
+
+**二、问题探究**
+
+
 
 [gdb给指定位置设置断点_gdb 断点 地址-CSDN博客](https://blog.csdn.net/rubikchen/article/details/115588379)
 

@@ -157,7 +157,7 @@
 
    运行程序`calc`，使除数为0，运行结果如下，程序判断`operand2==0`成立，在终端中输出字符串`"Error: division by zero\n"`
 
-   ![Lab2-1](E:\VSCODE\UbuntuShare\ICS\Pic\Lab2\Lab2-1.png)
+   ![Lab2-1](https://github.com/jiuhao47/UCAS-ICS-Share/blob/main/Lab2/Pic/Lab2-1.png?raw=true)
 
 2. **逆向工程：**
 
@@ -337,18 +337,19 @@
    | RDI    | 0x555555556019 | "%d %c %d" | 0x7fffffffd6a0 | “4”        |
    
    程序运行截图：
+   ![Lab2-2](https://github.com/jiuhao47/UCAS-ICS-Share/blob/main/Lab2/Pic/Lab2-2.png?raw=true)
    
-   ![Lab2-3](E:\VSCODE\UbuntuShare\ICS\UCAS-ICS-Share\Lab2\Pic\Lab2-3.png)
+   ![Lab2-3](https://github.com/jiuhao47/UCAS-ICS-Share/blob/main/Lab2/Pic/Lab2-3.png?raw=true)
    
-   ![Lab2-4](E:\VSCODE\UbuntuShare\ICS\UCAS-ICS-Share\Lab2\Pic\Lab2-4.png)
+   ![Lab2-4](https://github.com/jiuhao47/UCAS-ICS-Share/blob/main/Lab2/Pic/Lab2-4.png?raw=true)
    
    运行结果分析：
    
    寄存器RAX储存的为后续用于条件判断的输入数，从"%d %c %d"的字符串变成了3；寄存器RCX，RDX，RSI在运行前都是空字符串，然后值分别变成了0x20,0x0,0x4，即32，0，4，其中32位空格的ASSCI码，4为operand2的值，对应寄存器RDI存储的字符串“4”。
    
-4. **漏洞挖掘：**
+5. **漏洞挖掘：**
 
-5. **汇编阅读：**
+6. **汇编阅读：**
 
    一段Shellcode的汇编码（64位）
 
@@ -424,7 +425,7 @@
       #即执行execve("/bin/sh,0,0")，获取shell
       ```
    
-6. **漏洞利用：**
+7. **漏洞利用：**
 
    
 

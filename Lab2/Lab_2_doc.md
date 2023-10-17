@@ -459,9 +459,15 @@
    # 被修改的输入函数返回地址，指向/bin/sh的shellcode
    ```
    
-   调试结果：
+   运行截图：
    
-   ![image-20231017162952109](C:\Users\20149\AppData\Roaming\Typora\typora-user-images\image-20231017162952109.png)
+   ![Lab2-5.png](https://github.com/jiuhao47/UCAS-ICS-Share/blob/main/Lab2/Pic/Lab2-5.png?raw=true)
+   
+   ![Lab2-6.png](https://github.com/jiuhao47/UCAS-ICS-Share/blob/main/Lab2/Pic/Lab2-6.png?raw=true)
+   
+   网络环境下的运行截图：
+   
+   ![image-20231017163928965](C:\Users\20149\AppData\Roaming\Typora\typora-user-images\image-20231017163928965.png)
 
 [gdb给指定位置设置断点_gdb 断点 地址-CSDN博客](https://blog.csdn.net/rubikchen/article/details/115588379)
 

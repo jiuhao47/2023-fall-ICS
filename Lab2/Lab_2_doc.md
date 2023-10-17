@@ -293,7 +293,7 @@
    continue
    p operand1
    p operand2
-p operator
+   p operator
    i r
    x/s $rax
    x/s $rbx

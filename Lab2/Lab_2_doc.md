@@ -337,7 +337,6 @@
    | RDI    | 0x555555556019 | "%d %c %d" | 0x7fffffffd6a0 | “4”        |
    
    程序运行截图：
-   ![Lab2-2](https://github.com/jiuhao47/UCAS-ICS-Share/blob/main/Lab2/Pic/Lab2-2.png?raw=true)
    
    ![Lab2-3](https://github.com/jiuhao47/UCAS-ICS-Share/blob/main/Lab2/Pic/Lab2-3.png?raw=true)
    

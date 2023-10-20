@@ -1,7 +1,7 @@
 #  网络空间安全导论实验
 
 ## 实验二 软件安全：逆向工程、漏洞挖掘与利用
-姜俊彦 2022K8009970011 2023年10月10日
+姜俊彦 2022K8009970011 2023年10月日
 
 ### 摘要：
 
@@ -497,50 +497,321 @@
 
 > 在实验的这一部分，你将选择至少一个问题进行探究。可以参考下面提出的问题。请在实验报告里详细记录你的探究过程与发现，探究过程需要有实际操作作为支撑。**多截图**。
 
-问题：如何运行一段汇编代码？
+1. 问题1：
 
-下面一段`Shellcode`程序的汇编代码及注释
+   > 如何运行一段汇编代码？
+   
+   下面一段`Shellcode`程序的汇编代码及注释
+   
+   ```assembly
+   section .text
+   global _start
+   _start:
+   xor rax,rax
+   push 0x3b
+   pop rax
+   xor rdi,rdi
+   mov rdi,0x68732f6e69622f
+   push rdi
+   push rsp
+   pop rdi
+   xor rsi,rsi
+   xor rdx,rdx
+   syscall
+   ```
 
-```assembly
-section .text
-global _start
-_start:
-xor rax,rax
-push 0x3b
-pop rax
-xor rdi,rdi
-mov rdi,0x68732f6e69622f
-push rdi
-push rsp
-pop rdi
-xor rsi,rsi
-xor rdx,rdx
-syscall
-```
-
-想要运行以上`Shellcode`，需要先安装`nasm`包：
-
-```bash
+	想要运行以上`Shellcode`，需要先安装`nasm`包：
+	
+	```bash
 sudo apt install nasm
-```
+	```
 
-然后使用`nasm`编译生成`shellcode.o`文件：
-
-```bash
+	然后使用`nasm`编译生成`shellcode.o`文件：
+	
+	```bash
 nasm -f elf64 shellcode.asm 
-```
+	```
 
-最后使用`ld`命令生成二进制可执行文件：
-
-```bash
+	最后使用`ld`命令生成二进制可执行文件：
+	
+	```bash
 ld -s -o shellcode shellcode.o
-```
+	```
 
-运行可执行文件即可获取`Shell`
+	运行可执行文件即可获取`Shell`
+	
+	![Lab2-11.png](https://github.com/jiuhao47/UCAS-ICS-Share/blob/main/Lab2/Pic/Lab2-11.png?raw=true)
+	
+2. 问题2：
 
-![image-20231020164529947](C:\Users\20149\AppData\Roaming\Typora\typora-user-images\image-20231020164529947.png)
+   > 汇编指令可以读写寄存器和内存。那么，为什么可以用汇编编写访问文件的程序？当程序访问文件时，在计算机内部实际发生了什么？以 Linux 为例，重点说明可以进行实验验证的部分。
 
+   当程序访问文件时，应用程序首先调用标准C库函数`fopen`、`fread`、`fwrite`、`fclose`等函数来打开、读取、写入和关闭文件。标准C库函数调用Linux系统调用`open`、`read`、`write`、`close`来执行文件操作。Linux系统调用使用汇编指令来与计算机硬件交互，以便在磁盘上读取或写入数据。
 
+   使用标准C库函数编写的文件创建程序`fileopen.c`
+
+   ```C
+   #include <stdio.h>
+   #include <stdlib.h>
+    
+   int main()
+   {
+      FILE * fp;
+    
+      fp = fopen ("file.txt", "w+");
+      fprintf(fp, "%s %s %s %d", "We", "are", "in", 2014);
+      
+      fclose(fp);
+      
+      return(0);
+   }
+   ```
+
+   查看汇编代码
+
+   `fileopen.c`
+
+   ```assembly
+   	.file	"fileopen.c"
+   	.text
+   	.section	.rodata
+   .LC0:
+   	.string	"w+"
+   .LC1:
+   	.string	"file.txt"
+   .LC2:
+   	.string	"in"
+   .LC3:
+   	.string	"are"
+   .LC4:
+   	.string	"We"
+   .LC5:
+   	.string	"%s %s %s %d"
+   	.text
+   	.globl	main
+   	.type	main, @function
+   main:
+   .LFB6:
+   	.cfi_startproc
+   	endbr64
+   	pushq	%rbp
+   	.cfi_def_cfa_offset 16
+   	.cfi_offset 6, -16
+   	movq	%rsp, %rbp
+   	.cfi_def_cfa_register 6
+   	subq	$16, %rsp
+   	leaq	.LC0(%rip), %rax
+   	movq	%rax, %rsi
+   	leaq	.LC1(%rip), %rax
+   	movq	%rax, %rdi
+   	call	fopen@PLT
+   	movq	%rax, -8(%rbp)
+   	movq	-8(%rbp), %rax
+   	movl	$2014, %r9d
+   	leaq	.LC2(%rip), %r8
+   	leaq	.LC3(%rip), %rdx
+   	movq	%rdx, %rcx
+   	leaq	.LC4(%rip), %rdx
+   	leaq	.LC5(%rip), %rsi
+   	movq	%rax, %rdi
+   	movl	$0, %eax
+   	call	fprintf@PLT
+   	movq	-8(%rbp), %rax
+   	movq	%rax, %rdi
+   	call	fclose@PLT
+   	movl	$0, %eax
+   	leave
+   	.cfi_def_cfa 7, 8
+   	ret
+   	.cfi_endproc
+   .LFE6:
+   	.size	main, .-main
+   	.ident	"GCC: (Ubuntu 11.4.0-1ubuntu1~22.04) 11.4.0"
+   	.section	.note.GNU-stack,"",@progbits
+   	.section	.note.gnu.property,"a"
+   	.align 8
+   	.long	1f - 0f
+   	.long	4f - 1f
+   	.long	5
+   0:
+   	.string	"GNU"
+   1:
+   	.align 8
+   	.long	0xc0000002
+   	.long	3f - 2f
+   2:
+   	.long	0x3
+   3:
+   	.align 8
+   4:
+   ```
+
+   通过阅读汇编代码和调试过程，笔者发现其过程的本质在于将系统传参寄存器赋值为`"w+"`与`"file.txt"`，然后调用函数`fopen`。我们在其中还没有看到系统调用函数`open`，在经过进一步的查阅后，我发现可以直接使用系统调用函数`open`。
+
+   下面是编写的含系统调用函数`open.c`代码：
+
+   ```C
+   #include <unistd.h>
+   #include <stdio.h>
+   #include <stdlib.h>
+   #include <fcntl.h>
+   #include <sys/types.h>
+   #include <sys/stat.h>
+   
+   int main(int argc, char *argv[])
+   {
+           int fd;
+           if (argc < 2) {
+                   printf("./a.out filename \n");
+                   exit(1);
+           }
+   
+           umask(0);
+           //这里关于文件不存在，则创建时赋予文件的权限两种方式是一样的,这里赋予的是00770权限
+           fd=open(argv[1],O_CREAT | O_RDWR, 0770);
+           printf("%d\n",fd);
+           close(fd);
+           return 0;
+   }
+   ```
+
+   `open.c`的汇编代码：
+
+   ```assembly
+   	.file	"open.c"
+   	.text
+   	.section	.rodata
+   .LC0:
+   	.string	"./a.out filename "
+   .LC1:
+   	.string	"%d\n"
+   	.text
+   	.globl	main
+   	.type	main, @function
+   main:
+   .LFB6:
+   	.cfi_startproc
+   	endbr64
+   	pushq	%rbp
+   	.cfi_def_cfa_offset 16
+   	.cfi_offset 6, -16
+   	movq	%rsp, %rbp
+   	.cfi_def_cfa_register 6
+   	subq	$32, %rsp
+   	movl	%edi, -20(%rbp)
+   	movq	%rsi, -32(%rbp)
+   	cmpl	$1, -20(%rbp)
+   	jg	.L2
+   	leaq	.LC0(%rip), %rax
+   	movq	%rax, %rdi
+   	call	puts@PLT
+   	movl	$1, %edi
+   	call	exit@PLT
+   .L2:
+   	movl	$0, %edi
+   	call	umask@PLT
+   	movq	-32(%rbp), %rax
+   	addq	$8, %rax
+   	movq	(%rax), %rax
+   	movl	$504, %edx
+   	movl	$66, %esi
+   	movq	%rax, %rdi
+   	movl	$0, %eax
+   	call	open@PLT
+   	movl	%eax, -4(%rbp)
+   	movl	-4(%rbp), %eax
+   	movl	%eax, %esi
+   	leaq	.LC1(%rip), %rax
+   	movq	%rax, %rdi
+   	movl	$0, %eax
+   	call	printf@PLT
+   	movl	-4(%rbp), %eax
+   	movl	%eax, %edi
+   	call	close@PLT
+   	movl	$0, %eax
+   	leave
+   	.cfi_def_cfa 7, 8
+   	ret
+   	.cfi_endproc
+   .LFE6:
+   	.size	main, .-main
+   	.ident	"GCC: (Ubuntu 11.4.0-1ubuntu1~22.04) 11.4.0"
+   	.section	.note.GNU-stack,"",@progbits
+   	.section	.note.gnu.property,"a"
+   	.align 8
+   	.long	1f - 0f
+   	.long	4f - 1f
+   	.long	5
+   0:
+   	.string	"GNU"
+   1:
+   	.align 8
+   	.long	0xc0000002
+   	.long	3f - 2f
+   2:
+   	.long	0x3
+   3:
+   	.align 8
+   4:
+   ```
+
+   ![Lab2-12](E:\VSCODE\UbuntuShare\ICS\UCAS-ICS-Share\Lab2\Pic\Lab2-12.png)
+
+   ![Lab2-13](E:\VSCODE\UbuntuShare\ICS\UCAS-ICS-Share\Lab2\Pic\Lab2-13.png)
+
+   可是以上结果仍然不能解释程序是如何操作文件的。通过查阅操作系统相关知识，得知
+
+   > ~(本课程需要的前置知识有：操作系统、编译原理(哭))~
+
+   > - - 首先用 `open` 系统调用打开文件，`open` 的参数中包含文件的路径名和文件名。
+   >   - 使用 `write` 写数据，其中 `write` 使用 `open` 所返回的**文件描述符**，并不使用文件名作为参数。
+   >   - 使用完文件后，要用 `close` 系统调用关闭文件，避免资源的泄露。
+   > - 打开了一个文件后，操作系统会跟踪进程打开的所有文件，所谓的跟踪呢，就是操作系统为每个进程维护一个打开文件表，文件表里的每一项代表「**文件描述符**」，所以说文件描述符是打开的文件的标识。
+   > - 操作系统在打开文件表中维护着打开文件的状态和信息：
+   >   - 文件指针：系统跟踪上次读写位置作为当前文件位置指针，这种指针对打开文件的某个进程来说是唯一的；
+   >   - 文件打开计数器：文件关闭时，操作系统必须重用其打开文件表条目，否则表内空间不够用。因为多个进程可能打开同一个文件，所以系统在删除打开文件条目之前，必须等待最后一个进程关闭文件，该计数器跟踪打开和关闭的数量，当该计数为 0 时，系统关闭文件，删除该条目；
+   >   - 文件磁盘位置：绝大多数文件操作都要求系统修改文件数据，该信息保存在内存中，以免每个操作都从磁盘中读取；
+   >   - 访问权限：每个进程打开文件都需要有一个访问模式（创建、只读、读写、添加等），该信息保存在进程的打开文件表中，以便操作系统能允许或拒绝之后的 I/O 请求。
+   > - 在用户视角里，文件就是一个持久化的数据结构，但操作系统并不会关心你想存在磁盘上的任何的数据结构，操作系统的视角是如何把文件数据和磁盘块对应起来。
+   > - 所以，用户和操作系统对文件的读写操作是有差异的，用户习惯以字节的方式读写文件，而操作系统则是以数据块来读写文件，那屏蔽掉这种差异的工作就是文件系统了。
+   > - 读文件和写文件的过程：
+   >   - 当用户进程从文件读取 1 个字节大小的数据时，文件系统则需要获取字节所在的数据块，再返回数据块对应的用户进程所需的数据部分。
+   >   - 当用户进程把 1 个字节大小的数据写进文件时，文件系统则找到需要写入数据的数据块的位置，然后修改数据块中对应的部分，最后再把数据块写回磁盘。
+   >   - 所以说，**文件系统的基本操作单位是数据块**。
+
+   在了解了以上知识之后，笔者认为可以通过`write`函数验证`open`返回的文件描述符，简单修改了上面用到的`open.c`文件如下。
+
+   ```C
+   #include <unistd.h>
+   #include <stdio.h>
+   #include <stdlib.h>
+   #include <fcntl.h>
+   #include <sys/types.h>
+   #include <sys/stat.h>
+   #define LENGTH   6
+   int main(int argc, char *argv[])
+   {
+   
+           int fd;
+           char *buf="Hello";
+           if (argc < 2) {
+                   printf("./a.out filename \n");
+                   exit(1);
+           }
+           umask(0);
+           //这里关于文件不存在，则创建时赋予文件的权限两种方式是一样的,这里赋予的是00770权限
+           fd=open(argv[1],O_CREAT | O_RDWR, 0770);
+           printf("%d\n",fd);
+           write(fd,buf,LENGTH);
+       	
+           close(fd);
+           return 0;
+   }
+   ```
+
+   运行结果（`write`函数写入的内容）
+
+   ![Lab2-14](E:\VSCODE\UbuntuShare\ICS\UCAS-ICS-Share\Lab2\Pic\Lab2-14.png)
 
 **三、综合运用**
 
@@ -550,11 +821,15 @@ ld -s -o shellcode shellcode.o
    >
    > 注：运行 shellcode 的方法有很多。相信同学们能自行解决
 
+   【尚未做】：打算在第二版实验报告中提交
+
 2. **闯关题**
 
    > 分析程序(games)，通过理解程序逻辑，完成里面的四个挑战，进入 Congratulations 分支。这个分实验适合主要采用白盒分析的方法来做。
    > 请闯尽可能多的关，将你对于每一关的理解以及你的思路记录在实验报告中。
    > 提示：为了了解每个子游戏是否成功通关，可以在 main 函数里面该游戏函数的返回处下断点，查看返回值(eax 寄存器) 是否为 1。
+
+   【尚未做】：打算在第二版实验报告中提交
 
 3. **黑盒调试题**
 
@@ -562,9 +837,13 @@ ld -s -o shellcode shellcode.o
    >
    > 注：这个题目去掉了调试符号。main 函数是__libc_start_main 函数的第一个参数，通过这个方法确定 main函数的地址。
    
+   【尚未做】：打算在第二版实验报告中提交
+   
 4. **漏洞利用**
    
    > auth 程序也有一个缓冲区溢出。请触发它，并使用类似课堂上讲解的方法来利用它。
+   
+   【已完成 】
    
    编写的漏洞利用脚本：
    
@@ -684,32 +963,26 @@ ld -s -o shellcode shellcode.o
 
    > 有的时候地址空间里面没有现成的 system("/bin/sh") ，如程序（hello2），在栈溢出时需要采用 ROP（Return oriented programming, 返回导向编程）的手段，请查阅资料，在这种情况下完成利用。一种 ROP 的思路是：调用 scanf("%s", addr) 来将字符串”/bin/sh” 写入一段可写的内存 addr，然后调用system(addr) 来执行 shell。下图提供了这个 ROP 链构造的一种方法。
 
-   
+   【尚未做】：打算在第二版实验报告中提交
 
    
 
+## 参考文献
 
+[GDB给指定位置设置断点](https://blog.csdn.net/rubikchen/article/details/115588379)
 
-[gdb给指定位置设置断点_gdb 断点 地址-CSDN博客](https://blog.csdn.net/rubikchen/article/details/115588379)
+[GDB内存断点(Memory break)的使用举例](https://blog.csdn.net/livelylittlefish/article/details/5110234)
 
-[GDB内存断点(Memory break)的使用举例_gdb 内存越界-CSDN博客](https://blog.csdn.net/livelylittlefish/article/details/5110234)
+[GDB 用法之显示寄存器](https://blog.csdn.net/xiaozhiwise/article/details/123247408)
 
-[gdb 笔记（03）— 某一行设置断点、为函数（单个唯一函数、多个同名函数、使用正则）设置断点、设置条件断点、设置临时断点_gdb breakpoint_wohu007的博客-CSDN博客](https://blog.csdn.net/wohu1104/article/details/124944226)
+[ASCII 表 | 菜鸟教程](https://www.runoob.com/w3cnote/ascii.html)
 
-[GDB 用法之显示寄存器_gdb查看寄存器_xiaozhiwise的博客-CSDN博客](https://blog.csdn.net/xiaozhiwise/article/details/123247408)
+[ubuntu20.04 如何生成core文件](https://blog.csdn.net/Jqivin/article/details/121908435)
 
-[ASCII 表 | 菜鸟教程 (runoob.com)](https://www.runoob.com/w3cnote/ascii.html)
+[* stack smashing detected * 是什么意思？](https://blog.csdn.net/qd1308504206/article/details/103273447)
 
-[ubuntu20.04 如何生成core文件_ubuntu 核心转储 默认位置_Jqivin的博客-CSDN博客](https://blog.csdn.net/Jqivin/article/details/121908435)
+[用汇编语言构造简单的shellcode](https://www.cnblogs.com/ZIKH26/articles/15845766.html)
 
-[ubuntu server 20.04 systemd服务如何生成core文件_limitcore=infinity-CSDN博客](https://blog.csdn.net/qq_15328161/article/details/109085705)
+[内存与文件基础知识](https://www.cnblogs.com/iwehdio/p/14243898.html)
 
-[ubuntu 16.04开启coredump并设置core文件的产生位置-CSDN博客](https://blog.csdn.net/qq_16019185/article/details/82620803)
-
-[ubuntu下不生成core dumped文件解决办法一则_ubuntu22.04 没有coredump文件_tomwillow的博客-CSDN博客](https://blog.csdn.net/tomwillow/article/details/124370398#:~:text=如果你看到core dumped字样，并且在目录下也找到了一个叫core的文件，那你可以直接用gdb定位到程序崩溃的位置了（注意用gcc编译时也要开-g选项才能用gdb调试）： %24 gdb.%2Fa.out,core 1 gdb加载后已经跳到程序崩溃的位置了。 就是在main.c的20行。)
-
-[linux下core dump【总结】 - Rabbit_Dale - 博客园 (cnblogs.com)](https://www.cnblogs.com/Anker/p/6079580.html)
-
-[*** stack smashing detected *** 是什么意思？怎么破_stack smash detected-CSDN博客](https://blog.csdn.net/qd1308504206/article/details/103273447)
-
-[用汇编语言构造简单的shellcode（64位&&32位）以及将汇编语言转换成机器码的方法 - ZikH26 - 博客园 (cnblogs.com)](https://www.cnblogs.com/ZIKH26/articles/15845766.html)
+[简介几种系统调用函数](https://www.cnblogs.com/tongye/p/9830006.html)

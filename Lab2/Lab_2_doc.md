@@ -346,9 +346,50 @@
    
    寄存器RAX储存的为后续用于条件判断的输入数，从"%d %c %d"的字符串变成了3；寄存器RCX，RDX，RSI在运行前都是空字符串，然后值分别变成了0x20,0x0,0x4，即32，0，4，其中32位空格的ASSCI码，4为operand2的值，对应寄存器RDI存储的字符串“4”。
    
-5. **漏洞挖掘：**
+4. **漏洞挖掘：**
 
-6. **汇编阅读：**
+   > 软件的安全漏洞非常常见，各位同学可能已经在不知不觉中写出过很多安全漏洞了。请按照以下步骤，寻找并分析这类安全漏洞：
+   >
+   > 1. 找出你自己或其他同学在 C 语言课或其他编程课程中编写的 C/C++ 程序。
+   >
+   > 2. 在 Linux 环境下，使用 gcc 编译器编译该程序，记得添加调试选项（-g 选项）。
+   >
+   > 3. 找出能够导致程序崩溃的输入，让程序崩溃产生 core dump 文件。
+   >
+   > 4. 使用 gdb 打开 core dump 文件，查看程序崩溃的位置
+
+   实验用到的C程序：
+
+   ```C
+   #include <stdio.h>
+   
+   int main()
+   {
+       char name[16];
+       printf("What is your name?");
+       scanf("%s", name);
+       printf("Hello,%s!\n", name);
+       return 0;
+   }
+   ```
+
+   对于一个输入需要限定长度但是没有限定的字符串，会出现以下报错信息：
+
+   ![image-20231021002850499](C:\Users\20149\AppData\Roaming\Typora\typora-user-images\image-20231021002850499.png)
+
+   而通过GDB中`generate-core-file`指令可以强制生成`core`文件：
+
+   ![image-20231021002950127](C:\Users\20149\AppData\Roaming\Typora\typora-user-images\image-20231021002950127.png)
+
+   使用GDB打开`core`文件有两种方法，一种是将文件和`core`一并打开，然后使用`bt`指令查看栈信息；另一种方法是先打开`core`文件，然后读入报错文件，随后使用`bt`指令查看栈信息。
+
+   操作结果如下图所示：
+
+   ![image-20231021003016833](C:\Users\20149\AppData\Roaming\Typora\typora-user-images\image-20231021003016833.png)
+
+   ![image-20231021003441363](C:\Users\20149\AppData\Roaming\Typora\typora-user-images\image-20231021003441363.png)
+
+5. **汇编阅读：**
 
    一段Shellcode的汇编码（64位）
 
@@ -380,7 +421,7 @@
    联合理解：
 
    1. 系统调用参数：
-   
+
        ```assembly
       xor rax,rax
       push 0x3b
@@ -392,9 +433,9 @@
       # 寄存器rax中存放的为系统调用编号
       # 这里将rax的值赋为execve函数的系统调用编号0x3b
       ```
-   
+
    2. 参数存放:
-   
+
       ```assembly
       xor rdi,rdi
       mov rdi ,0x68732f6e69622f
@@ -415,15 +456,15 @@
       # 然后将栈顶内存单元的值(参数的地址)弹给寄存器rdi，实现第一个系统调用参数的赋值
       # 最后将寄存器rsi,rdx的值赋成0，实现第二、三个系统调用参数的赋值
       ```
-   
+
    3. 执行系统调用：
-   
+
       ```assembly
       syscall
       
       #即执行execve("/bin/sh,0,0")，获取shell
       ```
-   
+
 6. **漏洞利用：**
 
    **调试漏洞利用：**
@@ -497,7 +538,7 @@
 
 > 在实验的这一部分，你将选择至少一个问题进行探究。可以参考下面提出的问题。请在实验报告里详细记录你的探究过程与发现，探究过程需要有实际操作作为支撑。**多截图**。
 
-1. 问题1：
+1. **问题1：**
 
    > 如何运行一段汇编代码？
    
@@ -542,7 +583,7 @@ ld -s -o shellcode shellcode.o
 	
 	![Lab2-11.png](https://github.com/jiuhao47/UCAS-ICS-Share/blob/main/Lab2/Pic/Lab2-11.png?raw=true)
 	
-2. 问题2：
+2. **问题2：**
 
    > 汇编指令可以读写寄存器和内存。那么，为什么可以用汇编编写访问文件的程序？当程序访问文件时，在计算机内部实际发生了什么？以 Linux 为例，重点说明可以进行实验验证的部分。
 
@@ -978,6 +1019,8 @@ ld -s -o shellcode shellcode.o
 [ASCII 表 | 菜鸟教程](https://www.runoob.com/w3cnote/ascii.html)
 
 [ubuntu20.04 如何生成core文件](https://blog.csdn.net/Jqivin/article/details/121908435)
+
+[Linux下gdb调试生成core文件并调试core文件](https://blog.csdn.net/wkd_007/article/details/79757289)
 
 [* stack smashing detected * 是什么意思？](https://blog.csdn.net/qd1308504206/article/details/103273447)
 

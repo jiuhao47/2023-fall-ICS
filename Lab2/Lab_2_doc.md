@@ -495,7 +495,52 @@
 
 **二、问题探究**
 
-local10
+> 在实验的这一部分，你将选择至少一个问题进行探究。可以参考下面提出的问题。请在实验报告里详细记录你的探究过程与发现，探究过程需要有实际操作作为支撑。**多截图**。
+
+问题：如何运行一段汇编代码？
+
+下面一段`Shellcode`程序的汇编代码及注释
+
+```assembly
+section .text
+global _start
+_start:
+xor rax,rax
+push 0x3b
+pop rax
+xor rdi,rdi
+mov rdi,0x68732f6e69622f
+push rdi
+push rsp
+pop rdi
+xor rsi,rsi
+xor rdx,rdx
+syscall
+```
+
+想要运行以上`Shellcode`，需要先安装`nasm`包：
+
+```bash
+sudo apt install nasm
+```
+
+然后使用`nasm`编译生成`shellcode.o`文件：
+
+```bash
+nasm -f elf64 shellcode.asm 
+```
+
+最后使用`ld`命令生成二进制可执行文件：
+
+```bash
+ld -s -o shellcode shellcode.o
+```
+
+运行可执行文件即可获取`Shell`
+
+![image-20231020164529947](C:\Users\20149\AppData\Roaming\Typora\typora-user-images\image-20231020164529947.png)
+
+
 
 **三、综合运用**
 
@@ -630,6 +675,8 @@ local10
          ```
    
          运行结果如图所示：
+   
+         ![Lab2-10.png](https://github.com/jiuhao47/UCAS-ICS-Share/blob/main/Lab2/Pic/Lab2-10.png?raw=true)
    
          
    

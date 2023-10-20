@@ -755,9 +755,9 @@ ld -s -o shellcode shellcode.o
    4:
    ```
 
-   ![Lab2-12](E:\VSCODE\UbuntuShare\ICS\UCAS-ICS-Share\Lab2\Pic\Lab2-12.png)
+   ![Lab2-12](https://github.com/jiuhao47/UCAS-ICS-Share/blob/main/Lab2/Pic/Lab2-12.png?raw=true)
 
-   ![Lab2-13](E:\VSCODE\UbuntuShare\ICS\UCAS-ICS-Share\Lab2\Pic\Lab2-13.png)
+   ![Lab2-13](https://github.com/jiuhao47/UCAS-ICS-Share/blob/main/Lab2/Pic/Lab2-13.png?raw=true)
 
    可是以上结果仍然不能解释程序是如何操作文件的。通过查阅操作系统相关知识，得知
 
@@ -811,7 +811,7 @@ ld -s -o shellcode shellcode.o
 
    运行结果（`write`函数写入的内容）
 
-   ![Lab2-14](E:\VSCODE\UbuntuShare\ICS\UCAS-ICS-Share\Lab2\Pic\Lab2-14.png)
+   ![Lab2-14](https://github.com/jiuhao47/UCAS-ICS-Share/blob/main/Lab2/Pic/Lab2-14.png?raw=true)
 
 **三、综合运用**
 

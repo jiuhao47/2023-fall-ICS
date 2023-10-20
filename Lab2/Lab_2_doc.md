@@ -375,19 +375,19 @@
 
    对于一个输入需要限定长度但是没有限定的字符串，会出现以下报错信息：
 
-   ![image-20231021002850499](C:\Users\20149\AppData\Roaming\Typora\typora-user-images\image-20231021002850499.png)
+   ![Lab2-15](https://github.com/jiuhao47/UCAS-ICS-Share/blob/main/Lab2/Pic/Lab2-15.png?raw=true)
 
    而通过GDB中`generate-core-file`指令可以强制生成`core`文件：
 
-   ![image-20231021002950127](C:\Users\20149\AppData\Roaming\Typora\typora-user-images\image-20231021002950127.png)
+   ![Lab2-16](https://github.com/jiuhao47/UCAS-ICS-Share/blob/main/Lab2/Pic/Lab2-16.png?raw=true)
 
    使用GDB打开`core`文件有两种方法，一种是将文件和`core`一并打开，然后使用`bt`指令查看栈信息；另一种方法是先打开`core`文件，然后读入报错文件，随后使用`bt`指令查看栈信息。
 
    操作结果如下图所示：
 
-   ![image-20231021003016833](C:\Users\20149\AppData\Roaming\Typora\typora-user-images\image-20231021003016833.png)
+   ![Lab2-17](https://github.com/jiuhao47/UCAS-ICS-Share/blob/main/Lab2/Pic/Lab2-17.png?raw=true)
 
-   ![image-20231021003441363](C:\Users\20149\AppData\Roaming\Typora\typora-user-images\image-20231021003441363.png)
+   ![Lab2-18](https://github.com/jiuhao47/UCAS-ICS-Share/blob/main/Lab2/Pic/Lab2-18.png?raw=true)
 
 5. **汇编阅读：**
 
@@ -564,19 +564,19 @@
 	想要运行以上`Shellcode`，需要先安装`nasm`包：
 	
 	```bash
-sudo apt install nasm
+	sudo apt install nasm
 	```
 
 	然后使用`nasm`编译生成`shellcode.o`文件：
 	
 	```bash
-nasm -f elf64 shellcode.asm 
+	nasm -f elf64 shellcode.asm 
 	```
 
 	最后使用`ld`命令生成二进制可执行文件：
 	
 	```bash
-ld -s -o shellcode shellcode.o
+	ld -s -o shellcode shellcode.o
 	```
 
 	运行可执行文件即可获取`Shell`

